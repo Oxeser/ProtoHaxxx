@@ -10,9 +10,22 @@ version = '1.4.0'
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url = 'https://repo.opencollab.dev/maven-releases/' }
-    maven { url = 'https://repo.opencollab.dev/maven-snapshots/' }
-    maven { url = 'https://mccheatz.github.io/maven_repo/' }
+    maven { 
+        url = 'https://repo.opencollab.dev/maven-releases/'
+        allowInsecureProtocol = true  // HTTP kullanılıyorsa gerekli
+    }
+    maven { 
+        url = 'https://repo.opencollab.dev/maven-snapshots/'
+        allowInsecureProtocol = true
+    }
+    maven { 
+        url = 'https://mccheatz.github.io/maven_repo/'
+        allowInsecureProtocol = true
+    }
+    // Cloudburst Protocol için ek repo
+    maven {
+        url = 'https://repo.cloudburstmc.org/releases'
+    }
 }
 
 configurations {
@@ -35,22 +48,31 @@ dependencies {
     embed('com.squareup.okhttp3:okhttp:4.11.0') {
         exclude group: 'org.jetbrains.kotlin'
     }
+    
+    // Eksik bağımlılıklar için alternatifler
+    embed 'org.iq80.leveldb:leveldb:0.12' // Alternatif LevelDB implementasyonu
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17) // JDK 17'ye yükseltildi (Gradle 8.0+ uyumluluğu için)
 }
 
 shadowJar {
     archiveClassifier.set('')
     configurations = [project.configurations.embed]
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    
+    // Paketleme sorunları için manifest ayarları
+    manifest {
+        attributes 'Main-Class': 'dev.sora.relay.MainKt' // Main class belirtin
+    }
 }
 
 publishing {
     publications {
         shadow(MavenPublication) { publication ->
             project.shadow.component(publication)
+            artifactId = 'relay'
         }
     }
 }
