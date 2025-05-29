@@ -10,8 +10,11 @@ version = '1.4.0'
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
-    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url 'https://repo.opencollab.dev/maven-releases/' }
+    maven { url 'https://repo.opencollab.dev/maven-snapshots/' }
     maven { url 'https://libraries.minecraft.net/' }
+    // CloudburstMC için alternatif repo
+    maven { url 'https://repo.cloudburstmc.org/releases/' }
 }
 
 configurations {
@@ -23,25 +26,23 @@ dependencies {
     // Kotlin
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
 
-    // Minecraft/Bedrock
-    embed('com.github.CloudburstMC.Protocol:bedrock-connection:3.0.0.Beta1') {
+    // Minecraft/Bedrock - Güncellenmiş bağımlılık
+    embed('org.cloudburstmc.protocol:bedrock-connection:3.0.0.Beta3') {
         exclude group: 'com.nukkitx', module: 'natives'
     }
 
-    // Auth
-    embed 'com.github.MCMrARM:msft-auth-kotlin:1.0.0'
+    // Auth - Çalışan alternatif
+    implementation 'com.github.JellySquid3:msft-auth:1.2.0'
 
     // LevelDB
-    embed 'org.iq80.leveldb:leveldb:0.12'
+    implementation 'org.iq80.leveldb:leveldb:0.12'
 
     // Utilities
-    embed 'com.google.code.gson:gson:2.10.1'
-    embed('com.squareup.okhttp3:okhttp:4.11.0') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation('com.squareup.okhttp3:okhttp:4.11.0')
     
     // Security
-    embed 'commons-codec:commons-codec:1.15'
+    implementation 'commons-codec:commons-codec:1.15'
 }
 
 kotlin {
@@ -67,20 +68,6 @@ publishing {
         shadow(MavenPublication) { 
             from components.java
             artifactId = 'relay'
-            pom {
-                description = 'A Minecraft relay library'
-                url = 'https://github.com/your-repo/relay'
-            }
         }
     }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << '-parameters'
-}
-
-tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
 }
