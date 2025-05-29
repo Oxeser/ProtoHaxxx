@@ -1,11 +1,11 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.9.22' // Güncel Kotlin sürümü
-    id 'com.github.johnrengelman.shadow' version '8.1.1' // Güncel Shadow sürümü
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
 }
 
 group = 'dev.sora.relay'
-version = '1.4.1' // Versiyonu güncelledim
+version = '1.4.1'
 
 repositories {
     mavenCentral()
@@ -13,11 +13,6 @@ repositories {
     maven { url 'https://repo.opencollab.dev/maven-releases/' }
     maven { url 'https://repo.opencollab.dev/maven-snapshots/' }
     maven { url 'https://libraries.minecraft.net/' }
-    // CloudburstMC için alternatif repo
-    maven { 
-        url 'https://repo.cloudburstmc.org/releases/'
-        allowInsecureProtocol = true // HTTPS sorunları için
-    }
 }
 
 configurations {
@@ -27,29 +22,24 @@ configurations {
 
 dependencies {
     // Kotlin
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3" // Güncel sürüm
-
-    // Minecraft/Bedrock - Alternatif bağımlılık
-    embed('org.cloudburstmc:bedrock-connection:3.0.1.Final') { // Daha stabil sürüm
-        exclude group: 'com.nukkitx', module: 'natives'
-    }
-
-    // Auth - Çalışan alternatif
-    implementation 'com.github.JellySquid3:msft-auth:2.0.0' // Güncel sürüm
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
 
     // LevelDB
     implementation 'org.iq80.leveldb:leveldb:0.12'
 
     // Utilities
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0' // Güncel sürüm
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     
     // Security
-    implementation 'commons-codec:commons-codec:1.16.0' // Güncel sürüm
+    implementation 'commons-codec:commons-codec:1.16.0'
 
     // Logging
     implementation 'org.slf4j:slf4j-api:2.0.9'
     implementation 'ch.qos.logback:logback-classic:1.4.11'
+
+    // Minecraft/Bedrock alternatif kütüphane (CloudBurstMC yerine)
+    implementation 'com.github.CloudburstMC:Protocol:3.0.0' // JitPack üzerinden alternatif
 }
 
 kotlin {
