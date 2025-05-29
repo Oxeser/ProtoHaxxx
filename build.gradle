@@ -1,11 +1,11 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
-    id 'com.github.johnrengelman.shadow' version '8.0.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22' // Güncel Kotlin sürümü
+    id 'com.github.johnrengelman.shadow' version '8.1.1' // Güncel Shadow sürümü
     id 'maven-publish'
 }
 
 group = 'dev.sora.relay'
-version = '1.4.0'
+version = '1.4.1' // Versiyonu güncelledim
 
 repositories {
     mavenCentral()
@@ -14,7 +14,10 @@ repositories {
     maven { url 'https://repo.opencollab.dev/maven-snapshots/' }
     maven { url 'https://libraries.minecraft.net/' }
     // CloudburstMC için alternatif repo
-    maven { url 'https://repo.cloudburstmc.org/releases/' }
+    maven { 
+        url 'https://repo.cloudburstmc.org/releases/'
+        allowInsecureProtocol = true // HTTPS sorunları için
+    }
 }
 
 configurations {
@@ -24,25 +27,29 @@ configurations {
 
 dependencies {
     // Kotlin
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3" // Güncel sürüm
 
-    // Minecraft/Bedrock - Güncellenmiş bağımlılık
-    embed('org.cloudburstmc.protocol:bedrock-connection:3.0.0.Beta3') {
+    // Minecraft/Bedrock - Alternatif bağımlılık
+    embed('org.cloudburstmc:bedrock-connection:3.0.1.Final') { // Daha stabil sürüm
         exclude group: 'com.nukkitx', module: 'natives'
     }
 
     // Auth - Çalışan alternatif
-    implementation 'com.github.JellySquid3:msft-auth:1.2.0'
+    implementation 'com.github.JellySquid3:msft-auth:2.0.0' // Güncel sürüm
 
     // LevelDB
     implementation 'org.iq80.leveldb:leveldb:0.12'
 
     // Utilities
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation('com.squareup.okhttp3:okhttp:4.11.0')
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0' // Güncel sürüm
     
     // Security
-    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'commons-codec:commons-codec:1.16.0' // Güncel sürüm
+
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
 }
 
 kotlin {
@@ -70,4 +77,12 @@ publishing {
             artifactId = 'relay'
         }
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+    systemProperty "file.encoding", "UTF-8"
 }
