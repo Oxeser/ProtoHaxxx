@@ -1,17 +1,21 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'com.github.johnrengelman.shadow' version '8.0.0'
     id 'maven-publish'
 }
 
 group = 'dev.sora.relay'
-version = '1.4.1'
+version = '1.4.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://repo.opencollab.dev/maven-releases/' }
-    maven { url 'https://libraries.minecraft.net/' }
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+
+    // Eğer bazı .jar dosyalarını manuel ekleyeceksen:
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 configurations {
@@ -20,59 +24,33 @@ configurations {
 }
 
 dependencies {
-    // Kotlin
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
 
-    // LevelDB
-    implementation 'org.iq80.leveldb:leveldb:0.12'
+    // Bu jar'lar artık yerel ise, libs/ klasöründen çekilebilir:
+    embed name: 'bedrock-connection-3.0.0.Beta1-SNAPSHOT'
+    embed name: 'minecraft-msftauth-2.1.6'
 
-    // Utilities
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    
-    // Security
-    implementation 'commons-codec:commons-codec:1.16.0'
-
-    // Logging
-    implementation 'org.slf4j:slf4j-api:2.0.9'
-    implementation 'ch.qos.logback:logback-classic:1.4.11'
-
-    // NukkitX alternatif (CloudBurstMC yerine)
-    implementation 'com.nukkitx:nbt:1.4.0'
-    implementation 'com.nukkitx:network:1.0.0'
+    embed 'com.google.code.gson:gson:2.10.1'
+    embed 'io.github._0x9fff00.leveldb:leveldb:0.10.2'
+    embed('com.squareup.okhttp3:okhttp:4.11.0') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(11)
 }
 
-tasks.named('shadowJar') {
-    archiveClassifier = ''
+shadowJar {
+    archiveClassifier.set('')
     configurations = [project.configurations.embed]
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    
-    manifest {
-        attributes 'Main-Class': 'dev.sora.relay.MainKt'
-    }
-    
-    relocate 'com.google', 'shadow.com.google'
-    relocate 'okhttp3', 'shadow.okhttp3'
-    relocate 'okio', 'shadow.okio'
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
 
 publishing {
     publications {
-        shadow(MavenPublication) { 
-            from components.java
-            artifactId = 'relay'
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
         }
     }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(Test).configureEach {
-    systemProperty "file.encoding", "UTF-8"
 }
