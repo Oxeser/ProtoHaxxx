@@ -8,15 +8,10 @@ group = 'dev.sora.relay'
 version = '1.4.0'
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    // Primary repositories
-    maven { url 'https://repo.opencollab.dev/maven-releases/' }
-    maven { url 'https://repo.opencollab.dev/maven-snapshots/' }
-    // Fallback repositories
-    maven { url 'https://mccheatz.github.io/maven_repo/' }
-    maven { url 'https://jitpack.io' }  // For GitHub-hosted dependencies
+    maven { url 'https://jitpack.io' }  // GitHub tabanlı bağımlılıklar için
     maven { url 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url 'https://libraries.minecraft.net/' }
 }
 
 configurations {
@@ -25,30 +20,28 @@ configurations {
 }
 
 dependencies {
-    // Kotlin
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
-    
-    // Minecraft/Bedrock
-    embed('org.cloudburstmc.protocol:bedrock-connection:3.0.0.Beta1-SNAPSHOT') {
+    // Kotlin kütüphaneleri
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
+
+    // Minecraft/Bedrock bağlantısı için alternatif
+    embed('com.github.CloudburstMC.Protocol:bedrock-connection:3.0.0.Beta1') {
         exclude group: 'com.nukkitx', module: 'natives'
     }
-    
-    // Auth - try alternative if original fails
-    embed('coelho.msftauth:minecraft-msftauth:2.1.6') {
-        exclude group: 'com.squareup.okhttp3'
-    } 
-    // Alternative auth library if above fails
-    // embed('com.github.MCMrARM:msft-auth-kotlin:1.0.0')
-    
-    // LevelDB - primary and fallback
-    embed 'io.github._0x9fff00.leveldb:leveldb:0.10.2'
-    embed 'org.iq80.leveldb:leveldb:0.12'  // Alternative
-    
-    // Other utilities
+
+    // Microsoft Auth için alternatif
+    embed 'com.github.MCMrARM:msft-auth-kotlin:1.0.0'
+
+    // LevelDB için alternatif
+    embed 'org.iq80.leveldb:leveldb:0.12'
+
+    // Diğer gerekli kütüphaneler
     embed 'com.google.code.gson:gson:2.10.1'
     embed('com.squareup.okhttp3:okhttp:4.11.0') {
         exclude group: 'org.jetbrains.kotlin'
     }
+    
+    // Ek güvenlik kütüphaneleri
+    embed 'commons-codec:commons-codec:1.15'
 }
 
 kotlin {
@@ -61,24 +54,4 @@ shadowJar {
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
     
     manifest {
-        attributes 'Main-Class': 'dev.sora.relay.MainKt' // Update with your main class
-    }
-    
-    // Relocate problematic packages if needed
-    relocate 'com.google', 'shadow.com.google'
-}
-
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-            artifactId = 'relay'
-        }
-    }
-}
-
-// For better caching in CI
-tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
-}
+        attributes 'Main-Class': 'dev.sora.relay.MainKt' // Ana sınıfınızı güncel
