@@ -1,10 +1,9 @@
 package dev.sora.relay.utils
 
 import dev.sora.relay.game.GameSession
-import io.netty.util.internal.logging.InternalLoggerFactory
+import org.slf4j.LoggerFactory
 
-
-private val logger = InternalLoggerFactory.getInstance(GameSession::class.java)
+private val logger = LoggerFactory.getLogger(GameSession::class.java)
 
 fun logInfo(vararg msg: Any?) {
     logger.info(msg.joinToString(" "))
