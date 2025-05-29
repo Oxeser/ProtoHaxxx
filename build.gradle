@@ -1,56 +1,14 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
-    id 'com.github.johnrengelman.shadow' version '8.0.0'
-    id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0' apply false
 }
 
 group = 'dev.sora.relay'
 version = '1.4.0'
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
-
-    // Eğer bazı .jar dosyalarını manuel ekleyeceksen:
-    flatDir {
-        dirs 'libs'
-    }
-}
-
-configurations {
-    embed
-    implementation.extendsFrom(embed)
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
-
-    // Bu jar'lar artık yerel ise, libs/ klasöründen çekilebilir:
-    embed name: 'bedrock-connection-3.0.0.Beta1-SNAPSHOT'
-    embed name: 'minecraft-msftauth-2.1.6'
-
-    embed 'com.google.code.gson:gson:2.10.1'
-    embed 'io.github._0x9fff00.leveldb:leveldb:0.10.2'
-    embed('com.squareup.okhttp3:okhttp:4.11.0') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-}
-
-kotlin {
-    jvmToolchain(11)
-}
-
-shadowJar {
-    archiveClassifier.set('')
-    configurations = [project.configurations.embed]
-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
-}
-
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-        }
-    }
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
